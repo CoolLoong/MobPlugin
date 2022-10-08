@@ -49,15 +49,6 @@ public class MobPlugin extends PluginBase implements Listener {
 
     @Override
     public void onEnable() {
-        if (!this.getServer().getName().equals("Nukkit")) {
-            this.getLogger().warning("MobPlugin does not support this software.");
-            this.getLogger().error("Incompatible server software. The plugin will be disabled.");
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        } else if (!this.getServer().getCodename().isEmpty()) {
-            this.getLogger().warning("MobPlugin does not support unofficial Nukkit versions!");
-        }
-
         config = new Config(this);
 
         if (!config.init(this)) {
@@ -85,40 +76,7 @@ public class MobPlugin extends PluginBase implements Listener {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (cmd.getName().equals("summon")) {
-            if (args.length == 0 || (args.length == 1 && !(sender instanceof Player))) {
-                return false;
-            }
-
-            String mob = Character.toUpperCase(args[0].charAt(0)) + args[0].substring(1);
-            int max = mob.length() - 1;
-            for (int x = 2; x < max; x++) {
-                if (mob.charAt(x) == '_') {
-                    mob = mob.substring(0, x) + Character.toUpperCase(mob.charAt(x + 1)) + mob.substring(x + 2);
-                }
-            }
-
-            Player playerThatSpawns;
-
-            if (args.length == 2) {
-                playerThatSpawns = getServer().getPlayer(args[1].replace("@s", sender.getName()));
-            } else {
-                playerThatSpawns = (Player) sender;
-            }
-
-            if (playerThatSpawns != null) {
-                Position pos = playerThatSpawns.getPosition();
-                Entity ent;
-                if ((ent = Entity.createEntity(mob, pos)) != null) {
-                    ent.spawnToAll();
-                    sender.sendMessage("\u00A76Spawned " + mob + " to " + playerThatSpawns.getName());
-                } else {
-                    sender.sendMessage("\u00A7cUnable to spawn " + mob);
-                }
-            } else {
-                sender.sendMessage("\u00A7cUnknown player " + (args.length == 2 ? args[1] : sender.getName()));
-            }
-        } else if (cmd.getName().equals("mob")) {
+        if (cmd.getName().equals("mob")) {
             if (args.length == 0) {
                 sender.sendMessage("-- MobPlugin " + this.getDescription().getVersion() + " --");
                 sender.sendMessage("/mob spawn <entity> <opt:player> - Summon entity");
